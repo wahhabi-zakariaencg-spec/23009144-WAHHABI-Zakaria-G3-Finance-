@@ -1,0 +1,466 @@
+% =====================================================================
+%  RAPPORT À COMPLÉTER
+%  Examen individuel (Partie B) : projet de science des données
+%  appliqué à la finance. S7 FIN et CI, cours BD & DS, ENCG-2026.
+%
+%  Mode d'emploi
+%  1. Remplacez chaque \acompleter{...} (texte rouge) et chaque
+%     \acel{...} (cellule rouge) par votre contenu. Rien ne doit rester
+%     en rouge dans la version remise. Après chaque compilation, le
+%     journal indique le nombre d'éléments qui restent à compléter.
+%  2. Compilez avec pdfLaTeX (sur Overleaf : compilateur pdfLaTeX).
+%     Compilez deux fois pour mettre à jour les renvois et les citations.
+%  3. Les figures sont cherchées dans ../figures/ puis dans figures/.
+%     Tant qu'une figure manque, un cadre la remplace : le document
+%     compile toujours. Sur Overleaf, créez un dossier figures/ et
+%     téléversez-y vos images.
+%  4. Citations : chaque source de la liste « Références et citations »
+%     a une clé (par exemple lie1). Citez-la dans le texte avec \cite{lie1}.
+%  5. Longueur : celle fixée par l'énoncé. Les lignes qui commencent
+%     par % sont des aides : vous pouvez les supprimer.
+%  6. Caractères spéciaux : écrivez \_ pour un tiret bas (par exemple
+%     \texttt{n\_estimators}), \% pour un pourcentage, \& pour &.
+%  7. Page de garde : placez le logo officiel de l'ENCG Settat, nommé
+%     logo_encg_settat.png, à côté de rapport.tex (ou dans figures/).
+%     Tant qu'il manque, un cadre le remplace.
+%  8. Votre photo (format identité) : placez-la à côté de rapport.tex,
+%     nommée photo_etudiant.jpg ou photo_etudiant.png. Tant qu'elle
+%     manque, un cadre la remplace.
+%  9. Lien GitHub : remplacez l'adresse dans la commande \lienDepot
+%     ci-dessous (une seule fois). Il s'affiche sur la page de garde et
+%     en annexe, en rouge tant qu'il n'est pas modifié.
+% 10. Remettez rapport.tex, rapport.pdf, le logo et la photo dans le
+%     dossier rapport/ de votre dépôt CodeApogee-Nom-Groupe.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\frenchsetup{StandardLists=true}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[labelsep=colon]{caption}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks]{hyperref}
+
+% ========== Mise en page et commandes du gabarit (ne pas modifier) ==========
+\addto\captionsfrench{%
+  \renewcommand{\tablename}{Tableau}%
+  \renewcommand{\refname}{Références et citations}}
+\setlist{itemsep=1pt,topsep=3pt}
+\setlength{\emergencystretch}{2em}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.2ex \@plus 0.4ex \@minus 0.2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcounter{nbacompleter}
+\DeclareRobustCommand{\acompleter}[1]{%
+  \stepcounter{nbacompleter}\textcolor{red}{\textit{[À compléter : #1]}}}
+\DeclareRobustCommand{\acel}[1]{%
+  \stepcounter{nbacompleter}\textcolor{red}{\textit{#1}}}
+% \insererfigure{fichier}{légende}{étiquette}
+\newcommand{\insererfigure}[3]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{../figures/#1}{\includegraphics[width=0.62\linewidth]{../figures/#1}}{%
+      \IfFileExists{figures/#1}{\includegraphics[width=0.62\linewidth]{figures/#1}}{%
+        \fbox{\parbox[c][2.4cm][c]{0.6\linewidth}{\centering\small
+          Figure à insérer : \texttt{figures/\detokenize{#1}}}}}}
+    \caption{#2}
+    \label{#3}
+  \end{figure}}
+% ---------- VOTRE LIEN GITHUB : remplacez l'adresse ci-dessous ----------
+\newcommand{\lienDepot}{https://github.com/wahhabi-zakariaencg-spec/23009144-WAHHABI-Zakaria-G3-Finance-}
+% -------------------------------------------------------------------------
+\newcommand{\lienParDefaut}{https://github.com/identifiant/CodeApogee-Nom-Groupe}
+\newcommand{\afficherlien}{%
+  \ifx\lienDepot\lienParDefaut
+    \stepcounter{nbacompleter}\textcolor{red}{\expandafter\url\expandafter{\lienDepot}}%
+  \else
+    \expandafter\url\expandafter{\lienDepot}%
+  \fi}
+% Photo de l'étudiant(e) : photo_etudiant.jpg ou photo_etudiant.png
+\newcommand{\photo}[1]{\includegraphics[width=3.5cm,height=4.5cm,keepaspectratio]{#1}}
+\newcommand{\insererphoto}{%
+  \IfFileExists{photo_etudiant.jpg}{\photo{photo_etudiant.jpg}}{%
+    \IfFileExists{photo_etudiant.png}{\photo{photo_etudiant.png}}{%
+      \fbox{\parbox[c][4.5cm][c]{3.5cm}{\centering\small\textcolor{red}{\textit{Photo de\\ l'étudiant(e)}}\\[4pt]
+        \scriptsize\texttt{photo\_etudiant.jpg}}}}}}
+% Nom du fichier du logo (modifiez-le si votre fichier porte un autre nom)
+\newcommand{\fichierlogo}{logo_encg_settat.png}
+\newcommand{\insererlogo}{%
+  \IfFileExists{\fichierlogo}{\includegraphics[height=2.8cm]{\fichierlogo}}{%
+    \IfFileExists{figures/\fichierlogo}{\includegraphics[height=2.8cm]{figures/\fichierlogo}}{%
+      \IfFileExists{../figures/\fichierlogo}{\includegraphics[height=2.8cm]{../figures/\fichierlogo}}{%
+        \fbox{\parbox[c][2.8cm][c]{6.5cm}{\centering\small Logo de l'ENCG Settat\\[2pt]
+          \texttt{\detokenize\expandafter{\fichierlogo}}}}}}}}
+\AtEndDocument{\ifnum\value{nbacompleter}>0
+  \typeout{ATTENTION : il reste \arabic{nbacompleter} élément(s) à compléter.}\fi}
+% ===========================================================================
+
+\begin{document}
+
+% =====================================================================
+%  PAGE DE GARDE
+% =====================================================================
+\begin{titlepage}
+  \centering
+  \insererlogo\par
+  \vspace{0.8cm}
+  {\large Université Hassan 1\ier{} de Settat}\par
+  \vspace{0.2cm}
+  {\Large\bfseries École Nationale de Commerce et de Gestion de Settat}\par
+  \vspace{0.1cm}
+  {\large ENCG Settat}\par
+  \vspace{1.6cm}
+  \rule{\linewidth}{0.8pt}\par
+  \vspace{0.5cm}
+  {\large Cours BD \& DS : examen individuel (Partie B)}\par
+  \vspace{0.3cm}
+  {\Large Rapport de projet de science des données appliqué à la finance}\par
+  \vspace{0.7cm}
+  {\LARGE\bfseries F7 : détection d'anomalies sur le S\&P~500}\par
+  \vspace{0.5cm}
+  \rule{\linewidth}{0.8pt}\par
+  \vfill
+  \begin{minipage}[c]{0.66\linewidth}
+  \large
+  \begin{tabular}{@{}ll@{}}
+    Réalisé par          & WAHHABI Zakaria \\[3pt]
+    Code Apogée          & 23009144 \\[3pt]
+    Groupe et filière    & G3, S7 FIN \\[3pt]
+    Algorithme principal & n\textsuperscript{o}~24, Isolation Forest \\[3pt]
+    Enseignant(e)        & {M.Abderrahim Larhlimi}\\[3pt]
+  \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.3\linewidth}
+    \centering\insererphoto
+  \end{minipage}\par
+  \vspace{0.8cm}
+  {\large\textbf{Dépôt GitHub :} \afficherlien}\par
+  \vfill
+  {\large Année universitaire 2026-2027}\par
+  \vspace{0.2cm}
+  Remis le \today
+\end{titlepage}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:introduction}
+% =====================================================================
+\paragraph{Contexte.} Les journées de krach ou de rebond brutal concentrent une grande part des pertes d'un portefeuille actions. Les repérer automatiquement intéresse les gestionnaires de portefeuille et les risk managers : une journée signalée comme atypique peut déclencher une revue des positions, une réduction de l'exposition ou l'ajout du scénario aux stress tests.
+
+\paragraph{Problématique.} Un Isolation Forest entraîné sur les rendements et la volatilité du S\&P~500 de 2016 à 2021 repère-t-il, sur 2022-2026, des journées atypiques liées à des événements de marché documentés, mieux qu'une règle des trois écarts-types ?
+
+\paragraph{Objectif mesurable.} Métrique principale : la précision événementielle, part des anomalies détectées sur le test qui tombent dans une fenêtre d'événement documenté. Référence naïve : règle des trois écarts-types. Test : du 3 janvier 2022 au 5 novembre 2026. Seuil fixé avant les résultats : une précision au moins égale à deux fois le niveau du hasard, et au moins égale à celle de la référence.
+
+\paragraph{Nature du problème.} Détection d'anomalies en apprentissage non supervisé : aucune journée n'est étiquetée « normale » ou « anormale », il n'existe donc pas de variable cible. L'évaluation se fait a posteriori, par confrontation à des événements documentés.
+
+\paragraph{Organisation du rapport.} La section~\ref{sec:etat} présente l'état de l'art et la section~\ref{sec:travaux} les travaux liés. Les sections~\ref{sec:donnees} à~\ref{sec:protocole} décrivent les données, leur exploration, leur préparation, l'algorithme retenu et le protocole expérimental. La section~\ref{sec:resultats} présente les résultats, discutés en section~\ref{sec:discussion}, avant la conclusion (section~\ref{sec:conclusion}).
+
+% =====================================================================
+\section{État de l'art}
+\label{sec:etat}
+% =====================================================================
+La détection d'anomalies cherche les observations qui s'écartent nettement du comportement de la majorité \cite{chandola}. En finance, elle sert à repérer fraudes, manipulations et chocs de marché \cite{ahmed}. Trois familles de méthodes dominent (tableau~\ref{tab:etat}). La plus simple est une règle de seuil sur l'écart à la moyenne, exprimé en écarts-types \cite{chandola}. Elle suppose implicitement des rendements proches d'une loi normale, alors que les rendements boursiers ont des queues épaisses et une volatilité qui se regroupe dans le temps \cite{cont}. Les approches économétriques modélisent cette volatilité conditionnelle, par exemple avec un GARCH \cite{bollerslev}, et signalent les résidus standardisés extrêmes. Enfin, les méthodes d'apprentissage automatique non supervisé, comme le facteur local d'aberrance (LOF) \cite{breunig} ou l'Isolation Forest \cite{lie1}, détectent des observations isolées dans un espace à plusieurs variables, sans hypothèse de loi.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Panorama des approches pour ce type de problème}
+  \label{tab:etat}
+  \small
+  \begin{tabular}{@{}P{3cm} P{4.3cm} P{3.5cm} P{3.5cm} l@{}}
+    \toprule
+    Approche & Principe & Atouts & Limites & Réf. \\
+    \midrule
+    Règle des $k$ écarts-types (référence naïve) & Signaler un rendement à plus de $k\sigma$ de la moyenne & Simple, transparente, sans réglage & Suppose une loi normale ; ignore le contexte de volatilité & \cite{chandola} \\
+    Modèle de volatilité (GARCH) & Modéliser la variance conditionnelle, signaler les résidus standardisés extrêmes & Tient compte du regroupement de la volatilité & Spécification paramétrique ; une seule série & \cite{bollerslev} \\
+    Apprentissage non supervisé (Isolation Forest, LOF) & Isoler ou comparer la densité des points dans un espace à plusieurs variables & Sans hypothèse de loi ; combine plusieurs variables & Seuil arbitraire (contamination) ; évaluation difficile sans étiquettes & \cite{lie1,breunig} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Travaux liés}
+\label{sec:travaux}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Travaux liés}
+  \label{tab:travaux}
+  \small
+  \begin{tabular}{@{}P{2.4cm} P{2.8cm} P{2.8cm} P{3.4cm} P{3.8cm}@{}}
+    \toprule
+    Travail & Données & Méthode & Résultat principal & Différence avec ce travail \\
+    \midrule
+    Liu, Ting et Zhou, 2008 \cite{lie1} & Jeux de référence publics (réseau, couverture forestière, etc.) & Isolation Forest, comparé à LOF, ORCA et forêts aléatoires & AUC de 1,00 sur Http ; résultats égaux ou meilleurs que LOF et ORCA sur la plupart des jeux, avec un coût de calcul linéaire & Données non financières, avec étiquettes ; ici, une série boursière sans étiquettes et un découpage chronologique \\
+    Beerli, 2025 \cite{lie2} & S\&P~500 quotidien, janvier 2023 à mars 2025 (prix et volume) & AIDA, Isolation Forest et LOF, validés par recoupement avec l'actualité financière & Précision de 80~\% pour AIDA et 88,9~\% pour LOF ; Isolation Forest détecte 40~\% d'anomalies de plus ; accord entre méthodes de 15 à 20~\% & Pas de période de test postérieure à l'apprentissage ; ici, modèle figé sur 2016-2021 et noté sur 2022-2026, comparé au hasard \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Positionnement.} Ce travail reprend l'Isolation Forest de \cite{lie1} et la validation par confrontation à l'actualité de \cite{lie2}. Il y ajoute un protocole chronologique strict (apprentissage, validation, test utilisé une seule fois), une référence naïve et un niveau de hasard, pour mesurer si les anomalies détectées sur une période nouvelle sont plus liées aux événements que des jours tirés au hasard.
+
+% =====================================================================
+\section{Jeu de données}
+\label{sec:donnees}
+% =====================================================================
+\begin{itemize}
+  \item \textbf{Nom et source :} S\&P~500 (série SP500), S\&P Dow Jones Indices LLC, diffusée par FRED, Federal Reserve Bank of St.~Louis \cite{donnees}, \url{https://fred.stlouisfed.org/series/SP500}
+  \item \textbf{Date d'extraction :} 17/11/2026
+  \item \textbf{Licence ou conditions d'utilisation :} droits d'auteur de S\&P Dow Jones Indices ; reproduction interdite sans autorisation écrite.
+  \item \textbf{Taille :} 2\,609 observations et 2 variables, du 7 novembre 2016 au 5 novembre 2026, fréquence quotidienne (clôture des jours de bourse).
+  \item \textbf{Unité d'observation :} un jour de bourse.
+  \item \textbf{Variable cible :} aucune (apprentissage non supervisé).
+  \item \textbf{Adéquation :} la série permet de mesurer l'ampleur de chaque mouvement de marché et son contexte (volatilité récente), ce que la détection d'anomalies doit comparer.
+  \item \textbf{Limites :} 96 valeurs manquantes (jours fériés) ; dix ans d'historique seulement, sans la crise de 2008 ; indice de prix, sans les dividendes ; aucune étiquette d'anomalie ; liste d'événements choisie par l'auteur.
+\end{itemize}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dictionnaire des principales variables}
+  \label{tab:dictionnaire}
+  \small
+  \begin{tabular}{@{}l P{5.6cm} l l l c@{}}
+    \toprule
+    Variable & Description & Type & Unité & Rôle & Manquants (\%) \\
+    \midrule
+    \texttt{date} & Jour de cotation & date & jour & date & 0 \\
+    \texttt{cloture} & Valeur de l'indice à la clôture & numérique & points & brute & 3,7 \\
+    \texttt{rendement} & $r_t = \ln(P_t / P_{t-1})$ & numérique & \% & explicative & 0 \\
+    \texttt{volatilite\_20j} & $\sigma_t = \operatorname{écart-type}(r_{t-20}, \dots, r_{t-1})$ & numérique & \% & explicative & 0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Exploration}
+\label{sec:exploration}
+% =====================================================================
+\paragraph{Statistiques descriptives.} Après nettoyage, il reste 2\,513 jours de bourse. La clôture vaut en moyenne 4\,214,0 points (écart-type 1\,515,4), avec un minimum de 2\,131,5 et un maximum de 7\,818,9 points. Les rendements quotidiens ont un kurtosis en excès de 16,6 : 37 jours sur 2\,512, soit 1,47~\%, dépassent trois écarts-types, contre environ 0,27~\% attendus pour une loi normale.
+
+\paragraph{Qualité des données.} Les valeurs manquantes, détectées avec \texttt{isna()}, sont les 96 jours fériés (3,7~\%) : ils sont supprimés, car aucun prix n'existe ces jours-là. Aucun doublon de date n'a été trouvé. Les rendements extrêmes sont conservés : ils correspondent à de vrais krachs, et ce sont justement eux que l'on cherche.
+
+\insererfigure{fig3_distribution.png}{Distribution des rendements quotidiens comparée à une loi normale}{fig:1}
+
+\noindent\textbf{Lecture de la figure~\ref{fig:1}.} Les rendements sont plus concentrés autour de zéro qu'une loi normale, et les valeurs extrêmes sont environ cinq fois plus fréquentes que prévu. Ce sont les queues épaisses décrites par \cite{cont} : les journées extrêmes sont réelles et se répètent, ce qui justifie de les détecter.
+
+\insererfigure{fig2_rendements.png}{Rendements logarithmiques quotidiens du S\&P~500 (en \%)}{fig:2}
+
+\noindent\textbf{Lecture de la figure~\ref{fig:2}.} Les rendements restent le plus souvent proches de zéro, mais les fortes variations arrivent en grappes : mars-avril 2020, l'année 2022 et avril 2025. Une même variation n'a donc pas le même sens dans un marché calme ou agité, d'où l'ajout de la volatilité des vingt jours précédents comme deuxième variable.
+
+% =====================================================================
+\section{Préparation}
+\label{sec:preparation}
+% =====================================================================
+\begin{itemize}
+  \item \textbf{Nettoyage :} suppression des 96 jours sans cotation, puis des 20 premières lignes sans historique suffisant : 2\,492 observations utilisables.
+  \item \textbf{Variables créées :} rendement logarithmique et volatilité des vingt jours précédents (\texttt{shift(1)}) ; formules dans le tableau~\ref{tab:dictionnaire}.
+  \item \textbf{Encodage et mise à l'échelle :} pas d'encodage (deux variables numériques). Standardisation nécessaire, car les deux variables n'ont pas la même échelle et l'Isolation Forest les découpe ensemble ; elle est placée dans un \texttt{Pipeline}.
+\end{itemize}
+
+\paragraph{Prévention des fuites.}
+\begin{itemize}
+  \item[$\boxtimes$] Transformations ajustées sur l'apprentissage seulement, dans un \texttt{Pipeline}.
+  \item[$\boxtimes$] Découpage chronologique, sans mélange (données datées).
+  \item[$\boxtimes$] Variables construites avec le passé seulement  (pas de cible, donc pas d'horizon $h$).
+  \item[$\boxtimes$] Aucune variable ne contient la cible (sans objet : pas de cible).
+  \item[$\boxtimes$] Jeu de test utilisé une seule fois, à la fin.
+\end{itemize}
+L'alignement est vérifié dans le notebook : la volatilité d'un jour, recalculée à la main sur les vingt rendements précédents, est identique à celle du tableau (0,004547 au 14 décembre 2016), et les premières lignes date, rendement, volatilité sont affichées.
+
+% =====================================================================
+\section{Algorithme}
+\label{sec:algorithme}
+% =====================================================================
+\paragraph{Choix.} L'Isolation Forest (algorithme n\textsuperscript{o}~24 de l'annexe A) est la seule méthode du support conçue pour la détection d'anomalies. Il fonctionne sans étiquettes, combine plusieurs variables sans hypothèse de loi, ce qui convient aux queues épaisses \cite{cont}, et attribue un score à chaque jour. DBSCAN (n\textsuperscript{o}~19) a été écarté : il dépend d'un rayon difficile à régler et ne permet pas de noter de nouvelles journées (pas de méthode \texttt{predict}).
+
+\paragraph{Principe.} Une anomalie est rare et différente, donc facile à isoler \cite{lie1}. Le modèle construit des arbres qui coupent l'espace au hasard : une variable au hasard, puis un seuil au hasard entre son minimum et son maximum. Un point normal, entouré de voisins, demande beaucoup de coupes ; un point atypique est isolé en très peu de coupes. Le score moyenne cette profondeur sur tous les arbres. Implémentation : \texttt{IsolationForest} de scikit-learn \cite{sklearn}.
+
+\paragraph{Formule essentielle.}
+\begin{equation}
+  s(x, n) = 2^{-\frac{E[h(x)]}{c(n)}}, \qquad c(n) = 2H(n-1) - \frac{2(n-1)}{n}
+  \label{eq:principale}
+\end{equation}
+où $x$ est une journée (rendement, volatilité), $h(x)$ le nombre de coupes nécessaires pour isoler $x$ dans un arbre, $E[h(x)]$ sa moyenne sur tous les arbres, $n$ le nombre d'observations utilisées par arbre, $c(n)$ la longueur moyenne d'isolement qui sert à normaliser, et $H(i) \approx \ln(i) + 0{,}5772$ le nombre harmonique. Plus $s$ est proche de 1, plus la journée est atypique.
+
+\paragraph{Paramètres appris.} Les variables et seuils de coupe de chaque arbre, et le seuil de décision sur le score (fixé par la contamination) ; la moyenne et l'écart-type de la standardisation.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Hyperparamètres étudiés}
+  \label{tab:hyper}
+  \small
+  \begin{tabular}{@{}l P{6.4cm} l l@{}}
+    \toprule
+    Hyperparamètre & Rôle et effet attendu & Valeurs testées & Valeur retenue \\
+    \midrule
+    \texttt{contamination} & Part des jours d'apprentissage classés anormaux ; fixe le seuil. Plus elle est élevée, plus on détecte de jours, mais moins extrêmes & 0,5 ; 1 ; 2 ; 5~\% & 0,5~\% \\
+    \texttt{n\_estimators} & Nombre d'arbres ; plus il est élevé, plus le score est stable & fixé, non réglé & 300 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Protocole expérimental}
+\label{sec:protocole}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Découpage des données}
+  \label{tab:decoupage}
+  \small
+  \begin{tabular}{@{}l l r@{}}
+    \toprule
+    Ensemble & Période ou proportion & Observations \\
+    \midrule
+    Apprentissage & du 7/12/2016 au 31/12/2019 (réglage), puis jusqu'au 31/12/2021 & 771, puis 1\,276 \\
+    Validation & du 2/01/2020 au 31/12/2021 & 505 \\
+    Test & du 3/01/2022 au 5/11/2026 & 1\,216 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Référence naïve :} un jour est anormal si son rendement s'écarte de plus de trois écarts-types de la moyenne, calculés sur l'apprentissage. C'est la règle recommandée par l'énoncé pour la détection d'anomalies, et la plus utilisée en pratique \cite{chandola}.
+  \item \textbf{Validation :} une validation chronologique unique (2020-2021), ajustement sur 2016-2019 ; 4 configurations essayées ; stabilité mesurée sur 5 graines (0, 1, 2, 3, 42).
+  \item \textbf{Métrique principale :} précision événementielle (\%) : part des anomalies détectées qui tombent dans une fenêtre d'événement documenté (13 événements, fixés avant le test). Elle est comparée au niveau du hasard, part de tous les jours de la période situés dans une fenêtre, car des fenêtres larges gonflent mécaniquement la précision.
+  \item \textbf{Métriques secondaires :} proportion de jours détectés (\%) ; rappel événementiel (\%), part des événements de la période qui contiennent au moins une anomalie.
+  \item \textbf{Graine aléatoire :} 42.
+\end{itemize}
+
+% =====================================================================
+\section{Résultats}
+\label{sec:resultats}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Comparaison de la référence naïve et du modèle}
+  \label{tab:resultats}
+  \small
+  \begin{tabular}{@{}l cc cc@{}}
+    \toprule
+    & \multicolumn{2}{c}{Précision événementielle (\%)} & \multicolumn{2}{c}{Rappel événementiel (\%)} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    Modèle & Validation & Test & Validation & Test \\
+    \midrule
+    Référence : règle des 3 écarts-types & 72,5 & 80,0 & 100,0 & 57,1 \\
+    Isolation Forest & 96,8 (91,9 $\pm$ 2,8) & aucune détection & 100,0 & 0,0 \\
+    \midrule
+    Niveau du hasard & 11,1 & 6,2 & -- & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\insererfigure{fig6_frise.png}{Frise chronologique du S\&P~500 et des journées atypiques détectées}{fig:3}
+
+\paragraph{Lecture des résultats.} En validation, l'Isolation Forest détecte 31 jours (6,14~\%), dont 96,8~\% dans une fenêtre d'événement, contre 72,5~\% pour la référence et 11,1~\% pour le hasard ; sur 5 graines, la précision vaut 91,9~\% $\pm$ 2,8 points. Sur le test, en revanche, il ne détecte aucun jour, alors que la référence en signale 10 (0,82~\%), dont 80,0~\% dans une fenêtre d'événement, contre 6,2~\% pour le hasard (tableau~\ref{tab:resultats}). La figure~\ref{fig:3} montre que les anomalies d'apprentissage se concentrent toutes en mars-avril 2020 et qu'aucun point rouge n'apparaît après le début du test.
+
+\paragraph{Analyse des erreurs.} Le modèle manque les 7 événements de la période de test. La référence en retrouve 4 sur 7 et manque l'invasion de l'Ukraine (pire séance $-3{,}00$~\%), la faillite de SVB ($-1{,}86$~\%) et le débouclage du carry trade sur le yen ($-3{,}04$~\%). Le score maximal du test vaut $-0{,}049$, sous le seuil de décision (0), atteint le 9 avril 2025 (rendement de $+9{,}09$~\%).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Prédictions sur des observations non utilisées pour l'apprentissage}
+  \label{tab:illustration}
+  \small
+  \begin{tabular}{@{}l l l P{7cm}@{}}
+    \toprule
+    Observation & Prédiction & Valeur réelle & Commentaire \\
+    \midrule
+    9/04/2025 & normal & événement (droits de douane) & Rebond de $+9{,}09$~\% après la pause des droits de douane ; signalé par la référence, pas par le modèle, car la volatilité précédente (2,02~\%) le rend moins atypique que les jours du Covid \\
+    10/04/2025 & normal & événement (droits de douane) & Baisse de $-3{,}52$~\% avec une volatilité de 2,95~\% : jugée normale par les deux méthodes \\
+    26/02/2026 & normal & aucun événement & Journée ordinaire ($-0{,}54$~\%), jugée normale par les deux méthodes : verdict correct \\
+    5/04/2023 & normal & aucun événement & Journée ordinaire ($-0{,}25$~\%), jugée normale par les deux méthodes : verdict correct \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Discussion des résultats}
+\label{sec:discussion}
+% =====================================================================
+\paragraph{Réponse à l'objectif.} L'objectif fixé dans l'introduction est non atteint, car l'Isolation Forest ne détecte aucune journée sur le test : sa précision est indéfinie, alors que la référence atteint 80,0~\%, soit environ 13 fois le niveau du hasard (6,2~\%).
+
+\paragraph{Interprétation.} Le modèle a appris une « normalité » qui contient le krach du Covid : la volatilité des vingt jours précédents y atteint 6,17~\%, contre 3,18~\% au maximum sur le test. Le seuil appris est donc très exigeant, et les chocs plus modérés de 2022-2026 restent dans la zone normale. La règle des trois écarts-types, qui ne regarde que l'ampleur du rendement, s'en sort mieux sur cette période. Ces constats décrivent un lien statistique entre l'ampleur des mouvements et les événements, pas une causalité.
+
+\paragraph{Surapprentissage et généralisation.} Le modèle signale 0,55~\% des jours en apprentissage et 0~\% au test, sur les deux sous-périodes (2022-2023 et 2024-2026). Les résultats sont stables selon la graine (écart-type de 2,8 points en validation) : le problème n'est pas le hasard des arbres, mais un changement de régime entre l'apprentissage et le test.
+
+\paragraph{Comparaison avec les travaux liés.} Comme \cite{lie2}, ce travail trouve que les anomalies détectées sur le S\&P~500 correspondent bien à des événements d'actualité quand le modèle est noté sur la période où il a appris (96,8~\% en validation). Il montre en plus que cette performance ne se transpose pas automatiquement à une période postérieure, ce que l'évaluation de \cite{lie2}, sans test chronologique séparé, ne mesurait pas.
+
+\paragraph{Limites et biais.} Pas d'étiquettes : la précision dépend d'une liste d'événements choisie et datée par l'auteur. La validation 2020-2021 est dominée par un seul épisode, le Covid, ce qui a favorisé un taux de contamination très faible. Dix ans de données seulement, un indice sans dividendes et deux variables.
+
+\paragraph{Pistes d'amélioration.} Réentraîner le modèle sur une fenêtre glissante récente (par exemple les deux dernières années), pour que la normalité apprise suive le régime de marché. Utiliser le classement par score plutôt qu'un seuil fixe, ou ajouter l'indice de volatilité VIX comme troisième variable.
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =====================================================================
+Non : entraîné sur 2016-2021, l'Isolation Forest ne repère aucune journée atypique sur 2022-2026, alors que la règle des trois écarts-types en trouve 10, dont 80,0~\% liées à des événements documentés. Le modèle a appris une normalité qui contient le Covid, si bien que les crises suivantes, plus modérées, passent sous son seuil. Le travail montre qu'un détecteur d'anomalies calibré sur une crise extrême doit être réentraîné régulièrement : c'est la perspective principale.
+
+% =====================================================================
+%  RÉFÉRENCES ET CITATIONS
+% =====================================================================
+\begin{thebibliography}{9}
+  \bibitem{donnees} S\&P Dow Jones Indices LLC, « S\&P 500 [SP500] », FRED, Federal Reserve Bank of St.~Louis, \url{https://fred.stlouisfed.org/series/SP500}, consulté le 
+  17/11/2026.
+  \bibitem{chandola} V.~Chandola, A.~Banerjee et V.~Kumar, « Anomaly detection: A survey », \textit{ACM Computing Surveys}, vol.~41, n\textsuperscript{o}~3, article 15, 2009.
+  \bibitem{ahmed} M.~Ahmed, A.~N.~Mahmood et M.~R.~Islam, « A survey of anomaly detection techniques in financial domain », \textit{Future Generation Computer Systems}, vol.~55, p.~278-288, 2016.
+  \bibitem{cont} R.~Cont, « Empirical properties of asset returns: stylized facts and statistical issues », \textit{Quantitative Finance}, vol.~1, n\textsuperscript{o}~2, p.~223-236, 2001.
+  \bibitem{bollerslev} T.~Bollerslev, « Generalized autoregressive conditional heteroskedasticity », \textit{Journal of Econometrics}, vol.~31, n\textsuperscript{o}~3, p.~307-327, 1986.
+  \bibitem{breunig} M.~M.~Breunig, H.-P.~Kriegel, R.~T.~Ng et J.~Sander, « LOF: Identifying density-based local outliers », \textit{Proceedings of the ACM SIGMOD International Conference on Management of Data}, p.~93-104, 2000.
+  \bibitem{lie1} F.~T.~Liu, K.~M.~Ting et Z.-H.~Zhou, « Isolation Forest », \textit{Proceedings of the 8th IEEE International Conference on Data Mining (ICDM)}, p.~413-422, 2008.
+  \bibitem{lie2} F.~Beerli, « Unsupervised anomaly detection in the S\&P 500: a comparative approach », mémoire, ZHAW, 2025, \url{https://doi.org/10.21256/zhaw-35701}.
+  \bibitem{sklearn} F.~Pedregosa \textit{et al.}, « Scikit-learn: Machine Learning in Python », \textit{Journal of Machine Learning Research}, vol.~12, p.~2825-2830, 2011.
+  \bibitem{support} Support du cours BD \& DS, notebook \texttt{Tp\_ML.ipynb}, ENCG-2026.
+\end{thebibliography}
+
+% =====================================================================
+%  ANNEXES
+% =====================================================================
+\appendix
+
+\section{Reproduction}
+\label{ann:reproduction}
+Version corrigée : étiquette \texttt{remise-finale} du dépôt \afficherlien.
+\begin{enumerate}
+  \item Cloner le dépôt : \texttt{git clone} suivi du lien ci-dessus.
+  \item Installer les dépendances : \texttt{pip install -r requirements.txt}.
+  \item Exécuter \texttt{notebooks/projet\_F7.ipynb} avec « Redémarrer et tout exécuter ».
+\end{enumerate}
+Le notebook a été exécuté sur Google Colab, avec un chargement des données depuis Google Drive (méthode validée par l'enseignant) ; adapter la variable \texttt{FICHIER} au chemin local du fichier SP500. Le notebook s'appuie sur le support du cours \cite{support}.
+
+\section{Tableaux et figures complémentaires}
+\label{ann:complements}
+La figure~\ref{fig:validation} montre la courbe de validation utilisée pour régler le taux de contamination (section~\ref{sec:algorithme}).
+
+\insererfigure{fig5_courbe_validation.png}{Courbe de validation : précision événementielle selon le taux de contamination}{fig:validation}
+
+\section{Déclaration des outils d'IA}
+\label{ann:ia}
+\begin{table}[htbp]
+  \centering
+  \caption{Ressources et outils d'IA utilisés}
+  \label{tab:ia}
+  \small
+  \begin{tabular}{@{}P{3cm} P{4.8cm} P{3.3cm} P{4.4cm}@{}}
+    \toprule
+    Outil ou ressource & Usage précis & Parties concernées & Vérification effectuée \\
+    \midrule
+    Claude (Anthropic), novembre 2026 & Aide à la formulation de la problématique et de l'objectif mesurable & Introduction & Relu et reformulé \\
+    Claude (Anthropic), novembre 2026 & Suggestion du code de préparation, du modèle et des graphiques, puis résolution d'une erreur de chemin & Sections 6 à 9 & Code exécuté dans Colab, sorties relues \\
+    Claude (Anthropic), novembre 2026 & Aide à la rédaction des interprétations, de la présentation et de ce rapport, recherche de références & Ensemble du rapport & Chiffres recopiés des sorties du notebook ; références vérifiées \\
+    Vidnoz, novembre 2026 & Vidéo de présentation avec un avatar & Présentation & Vidéo visionnée et vérifiée \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\end{document}
